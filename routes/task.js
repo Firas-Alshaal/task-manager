@@ -7,6 +7,7 @@ const router = express.Router();
 const taskController = require("../controllers/task");
 
 router.get("/tasks", taskController.getTasks);
+router.get("/employees", taskController.getEmployees);
 
 router.post(
   "/create-task",

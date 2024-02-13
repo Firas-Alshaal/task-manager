@@ -28,6 +28,22 @@ exports.getTasks = (req, res, next) => {
     });
 };
 
+exports.getEmployees = (req, res, next) => {
+  Employee.find()
+    .then((employee) => {
+      res.status(200).json({
+        message: "Fetched employee successfully",
+        employees: employee,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
 exports.createTask = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
