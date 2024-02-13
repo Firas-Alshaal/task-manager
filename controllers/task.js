@@ -2,22 +2,12 @@ const { validationResult } = require("express-validator");
 const Task = require("../models/task");
 const Employee = require("../models/employee");
 exports.getTasks = (req, res, next) => {
-  const currentPage = req.query.page || 1;
-  const perPage = 2;
-  let totalItems;
   Task.find()
-    .countDocuments()
-    .then((count) => {
-      totalItems = count;
-      return Task.find()
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
-    })
+    .populate("assignedTo")
     .then((tasks) => {
       res.status(200).json({
         message: "Fetched tasks successfully",
         tasks: tasks,
-        totalItems: totalItems,
       });
     })
     .catch((err) => {
