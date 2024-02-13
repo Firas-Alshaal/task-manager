@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const Task = require("../models/task");
+const Employee = require("../models/employee");
 exports.getTasks = (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 2;
@@ -35,11 +36,13 @@ exports.createTask = (req, res, next) => {
     throw error;
   }
 
-  const title = req.body.title;
-  const description = req.body.description;
+  const title = req.body.taskName;
+  const description = req.body.taskDescription;
+  const assignedEmployee = req.body.assignedTo;
   const task = new Task({
-    title: title,
-    content: description,
+    taskName: title,
+    taskDescription: description,
+    assignedTo: assignedEmployee,
   });
   task
     .save()
@@ -47,6 +50,36 @@ exports.createTask = (req, res, next) => {
       res.status(201).json({
         message: "task created successfully",
         task: task,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.createEmployee = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, entered data is incorrect");
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const name = req.body.name;
+  const email = req.body.email;
+  const employee = new Employee({
+    name: name,
+    email: email,
+  });
+  employee
+    .save()
+    .then((result) => {
+      res.status(201).json({
+        message: "employee created successfully",
+        employee: employee,
       });
     })
     .catch((err) => {
